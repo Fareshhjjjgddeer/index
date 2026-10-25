@@ -1,0 +1,2307 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoZone | سيستم إلكتروني شامل لإكسسوارات وخدمات السيارات</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #e50914;
+            --primary-hover: #b80710;
+            --secondary: #111118;
+            --bg-dark: #0b0b0f;
+            --card-bg: #16161f;
+            --card-border: #262635;
+            --text-main: #f5f5f7;
+            --text-muted: #9e9ea7;
+            --accent: #ffb400;
+            --success: #10b981;
+            --info: #3b82f6;
+            --danger: #ef4444;
+            --radius: 12px;
+            --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2a3c;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Utilities */
+        .container {
+            width: 92%;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #a70008);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(229, 9, 20, 0.5);
+        }
+
+        .btn-secondary {
+            background: #222230;
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+        }
+        .btn-secondary:hover {
+            background: #2c2c3e;
+            color: #fff;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+        }
+        .btn-success:hover {
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
+        }
+        .btn-danger:hover {
+            opacity: 0.9;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+        .badge-primary { background: rgba(229, 9, 20, 0.2); color: #ff4d56; border: 1px solid rgba(229, 9, 20, 0.4); }
+        .badge-accent { background: rgba(255, 180, 0, 0.2); color: var(--accent); border: 1px solid rgba(255, 180, 0, 0.4); }
+        .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.4); }
+        .badge-info { background: rgba(59, 130, 246, 0.2); color: var(--info); border: 1px solid rgba(59, 130, 246, 0.4); }
+
+        /* Navbar */
+        header {
+            background: rgba(17, 17, 24, 0.85);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .nav-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 75px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+        .logo i {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cart-icon-btn {
+            position: relative;
+            background: #1c1c28;
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .cart-icon-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--primary);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 800;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Hero Slider */
+        .hero-slider {
+            position: relative;
+            height: 520px;
+            overflow: hidden;
+            background: #000;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(11,11,15,0.95) 0%, rgba(11,11,15,0.7) 50%, rgba(11,11,15,0.2) 100%);
+        }
+
+        .slide-content {
+            position: relative;
+            z-index: 2;
+            max-width: 650px;
+            padding: 40px;
+        }
+
+        .slide-content h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin: 15px 0;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .slide-content p {
+            font-size: 1.15rem;
+            color: #d1d1d6;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(22, 22, 31, 0.7);
+            border: 1px solid var(--card-border);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+        }
+        .slider-arrow:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        .slider-arrow.prev { right: 20px; }
+        .slider-arrow.next { left: 20px; }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .dot.active {
+            background: var(--primary);
+            width: 30px;
+            border-radius: 10px;
+        }
+
+        /* Main View Navigation */
+        .view-section {
+            display: none;
+            padding: 40px 0 80px 0;
+        }
+        .view-section.active {
+            display: block;
+        }
+
+        /* Section Titles */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Filters Bar */
+        .filters-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: var(--radius);
+            border: 1px solid var(--card-border);
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .cat-tab {
+            padding: 8px 18px;
+            border-radius: 20px;
+            background: #1c1c28;
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .cat-tab:hover, .cat-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 250px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            background: #1c1c28;
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            color: white;
+            outline: none;
+        }
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Product Cards Grid */
+        .products-grid, .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card, .service-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .product-card:hover, .service-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(229, 9, 20, 0.5);
+            box-shadow: var(--shadow);
+        }
+
+        .product-img-wrap, .service-img-wrap {
+            position: relative;
+            height: 200px;
+            width: 100%;
+            background: #0d0d12;
+            overflow: hidden;
+        }
+        .product-img-wrap img, .service-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        .product-card:hover .product-img-wrap img, .service-card:hover .service-img-wrap img {
+            transform: scale(1.05);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 2;
+        }
+
+        .product-info, .service-info {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-cat {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .product-title, .service-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+            line-height: 1.4;
+        }
+
+        .product-desc, .service-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-bottom, .service-bottom {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        /* Feed / Posts Section */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 25px;
+        }
+
+        .post-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-media {
+            width: 100%;
+            max-height: 280px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .post-media img, .post-media video {
+            width: 100%;
+            max-height: 280px;
+            object-fit: cover;
+        }
+
+        .post-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+        }
+
+        .post-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .post-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .post-text {
+            font-size: 0.9rem;
+            color: #c4c4cd;
+            line-height: 1.6;
+        }
+
+        .post-linked-prod {
+            background: #1c1c28;
+            border: 1px dashed var(--primary);
+            padding: 10px 15px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+
+        /* Reviews Section */
+        .reviews-summary {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 30px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .avg-rating {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .rating-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1;
+        }
+        .stars {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .review-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .reviewer-name {
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Dashboard Styling */
+        .admin-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 15px;
+            overflow-x: auto;
+        }
+
+        .admin-tab {
+            padding: 10px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+        .admin-tab:hover, .admin-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .dashboard-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 25px;
+        }
+
+        .dash-panel {
+            display: none;
+        }
+        .dash-panel.active {
+            display: block;
+        }
+
+        /* Data Tables */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+        .custom-table th, .custom-table td {
+            padding: 14px;
+            border-bottom: 1px solid var(--card-border);
+            vertical-align: middle;
+        }
+        .custom-table th {
+            background: #1c1c28;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .custom-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+        .table-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #000;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        .form-group label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: #13131a;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            color: white;
+            outline: none;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        /* File Upload UI */
+        .file-upload-box {
+            border: 2px dashed var(--card-border);
+            padding: 20px;
+            text-align: center;
+            border-radius: var(--radius);
+            background: #13131a;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+        .file-upload-box:hover {
+            border-color: var(--primary);
+            background: rgba(229, 9, 20, 0.05);
+        }
+        .file-upload-box input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        .preview-container {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow: hidden;
+            border-radius: 8px;
+            display: none;
+        }
+        .preview-container img, .preview-container video {
+            max-height: 150px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 25px;
+            position: relative;
+            animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes modalIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .close-modal:hover { color: white; }
+
+        /* Cart Items List */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .cart-item-details { flex-grow: 1; }
+        .cart-item-title { font-weight: 700; font-size: 0.95rem; }
+        .cart-item-price { color: var(--accent); font-weight: 700; font-size: 0.9rem; }
+        .cart-qty-ctrl {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #13131a;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        .qty-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: 800;
+            padding: 0 5px;
+        }
+
+        /* Floating Scroll-To-Top Arrow Button */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 20px rgba(229, 9, 20, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 1500;
+        }
+        .scroll-top-btn:hover {
+            transform: translateY(-5px);
+            background: var(--primary-hover);
+            box-shadow: 0 8px 25px rgba(229, 9, 20, 0.7);
+        }
+        .scroll-top-btn.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            background: #09090d;
+            border-top: 1px solid var(--card-border);
+            padding: 40px 0;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .slide-content h1 { font-size: 2rem; }
+            .hero-slider { height: 420px; }
+            .scroll-top-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="container nav-wrapper">
+            <a href="#" class="logo" onclick="switchView('store')">
+                <i class="fa-solid fa-car-burst"></i>
+                <span id="headerStoreName">AutoZone</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#menu" class="active" onclick="switchView('store')"><i class="fa-solid fa-store"></i> المتجر والمنيو</a></li>
+                <li><a href="#services" onclick="switchView('services')"><i class="fa-solid fa-wrench"></i> خدماتنا</a></li>
+                <li><a href="#posts" onclick="switchView('posts')"><i class="fa-solid fa-newspaper"></i> المنشورات والعروض</a></li>
+                <li><a href="#reviews" onclick="switchView('reviews')"><i class="fa-solid fa-star"></i> تقييمات العملاء</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <button class="cart-icon-btn" onclick="openModal('cartModal')">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart-count" id="cartBadge">0</span>
+                </button>
+                <button class="btn btn-primary" onclick="switchView('dashboard')">
+                    <i class="fa-solid fa-gauge-high"></i> لوحة التحكم
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container Switching Area -->
+    <main>
+
+        <!-- STORE FRONT VIEW -->
+        <div id="storeView" class="view-section active">
+
+            <!-- Dynamic Auto Hero Slider -->
+            <section class="hero-slider" id="heroSlider">
+                <!-- Slides generated by JS -->
+                <button class="slider-arrow prev" onclick="moveSlide(-1)"><i class="fa-solid fa-chevron-right"></i></button>
+                <button class="slider-arrow next" onclick="moveSlide(1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="slider-dots" id="sliderDots"></div>
+            </section>
+
+            <!-- Store Products Catalog Section -->
+            <section class="container" id="menu" style="padding-top: 50px;">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa-solid fa-boxes-stacked"></i> المنيو الإلكتروني للإكسسوارات</h2>
+                    <span class="badge badge-primary" id="totalProductsCount">0 منتج متوفر</span>
+                </div>
+
+                <!-- Filters & Search Bar -->
+                <div class="filters-bar">
+                    <div class="category-tabs" id="categoryTabs">
+                        <button class="cat-tab active" onclick="filterCategory('all')">الكل</button>
+                        <button class="cat-tab" onclick="filterCategory('إضاءات')">إضاءات وسيفتي</button>
+                        <button class="cat-tab" onclick="filterCategory('فرش وراحة')">فرش وراحة الداخلي</button>
+                        <button class="cat-tab" onclick="filterCategory('إلكترونيات')">شاشات وكاميرات</button>
+                        <button class="cat-tab" onclick="filterCategory('عناية بالسيارة')">منظفات وعناية</button>
+                    </div>
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="ابحث عن إكسسوار..." oninput="handleSearch()">
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div class="products-grid" id="productsGrid">
+                    <!-- Dynamic rendering -->
+                </div>
+            </section>
+
+        </div>
+
+        <!-- SERVICES FRONT VIEW SECTION -->
+        <div id="servicesView" class="view-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa-solid fa-screwdriver-wrench"></i> خدماتنا الاحترافية للسيارات</h2>
+                    <p style="color: var(--text-muted)">نوفر لكم أفضل خدمات التركيب والصيانة والعناية الشاملة بسيارتك</p>
+                </div>
+
+                <div class="services-grid" id="servicesGrid">
+                    <!-- Dynamic Rendering -->
+                </div>
+            </div>
+        </div>
+
+        <!-- POSTS & NEWS FEED VIEW -->
+        <div id="postsView" class="view-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa-solid fa-bullhorn"></i> منشورات وعروض المتجر</h2>
+                    <p style="color: var(--text-muted)">شاهد أحدث العروض وتجهيزات السيارات بالفيديو والصور</p>
+                </div>
+
+                <div class="posts-grid" id="postsGrid">
+                    <!-- Dynamic rendering -->
+                </div>
+            </div>
+        </div>
+
+        <!-- REVIEWS VIEW -->
+        <div id="reviewsView" class="view-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa-solid fa-comments"></i> آراء وتقييمات العملاء</h2>
+                    <button class="btn btn-primary" onclick="openModal('addReviewModal')">
+                        <i class="fa-solid fa-plus"></i> أضف تقييمك
+                    </button>
+                </div>
+
+                <div class="reviews-summary">
+                    <div class="avg-rating">
+                        <div class="rating-number" id="avgRatingNum">4.9</div>
+                        <div>
+                            <div class="stars" id="avgRatingStars">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                            </div>
+                            <span style="color: var(--text-muted); font-size: 0.9rem;" id="totalReviewsCount">بناءً على 0 تقييم</span>
+                        </div>
+                    </div>
+                    <div style="color: var(--text-muted); max-width: 400px; font-size: 0.9rem;">
+                        نهتم برأي عملائنا لتوفير أعلى جودة لإكسسوارات وخدمات السيارات.
+                    </div>
+                </div>
+
+                <div class="reviews-grid" id="reviewsGrid">
+                    <!-- Dynamic rendering -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN DASHBOARD VIEW -->
+        <div id="dashboardView" class="view-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title"><i class="fa-solid fa-sliders"></i> لوحة تحكم صاحب المحل</h2>
+                    <button class="btn btn-secondary" onclick="switchView('store')">
+                        <i class="fa-solid fa-eye"></i> معاينة المتجر
+                    </button>
+                </div>
+
+                <div class="admin-nav">
+                    <button class="admin-tab active" onclick="switchAdminTab('productsTab')"><i class="fa-solid fa-box"></i> إدارة المنتجات</button>
+                    <button class="admin-tab" onclick="switchAdminTab('servicesTab')"><i class="fa-solid fa-wrench"></i> إدارة خدمات المتجر</button>
+                    <button class="admin-tab" onclick="switchAdminTab('postsTab')"><i class="fa-solid fa-photo-film"></i> إدارة المنشورات والفيديوهات</button>
+                    <button class="admin-tab" onclick="switchAdminTab('ordersTab')"><i class="fa-solid fa-receipt"></i> الطلبات الواردة</button>
+                    <button class="admin-tab" onclick="switchAdminTab('slidesTab')"><i class="fa-solid fa-images"></i> خلفيات الواجهة</button>
+                    <button class="admin-tab" onclick="switchAdminTab('reviewsTab')"><i class="fa-solid fa-star"></i> إدارة التقييمات</button>
+                </div>
+
+                <div class="dashboard-content">
+
+                    <!-- Panel 1: Products Management -->
+                    <div id="productsTab" class="dash-panel active">
+                        <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-plus-circle"></i> إضافة / تعديل منتج</h3>
+                        
+                        <form id="productForm" onsubmit="saveProduct(event)">
+                            <input type="hidden" id="prodId">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>اسم المنتج</label>
+                                    <input type="text" id="prodName" class="form-control" placeholder="مثال: شاشة سيارة اندرويد 10 بوصة" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>القسم</label>
+                                    <select id="prodCategory" class="form-control" required>
+                                        <option value="إضاءات">إضاءات وسيفتي</option>
+                                        <option value="فرش وراحة">فرش وراحة الداخلي</option>
+                                        <option value="إلكترونيات">شاشات وكاميرات</option>
+                                        <option value="عناية بالسيارة">منظفات وعناية</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>السعر (ج.م)</label>
+                                    <input type="number" id="prodPrice" class="form-control" placeholder="0.00" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>شارة المنتج</label>
+                                    <select id="prodBadge" class="form-control">
+                                        <option value="">بدون شارة</option>
+                                        <option value="الأكثر مبيعاً">الأكثر مبيعاً</option>
+                                        <option value="خصم خاص">خصم خاص</option>
+                                        <option value="جديد">جديد</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>صورة المنتج (اختر من جهازك أو ضع رابط صورة)</label>
+                                <div class="file-upload-box">
+                                    <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i>
+                                    <p>اضغط هنا لاختيار صورة من جهازك</p>
+                                    <input type="file" id="prodFile" accept="image/*" onchange="previewFile(this, 'prodImgPreview')">
+                                </div>
+                                <input type="url" id="prodImgUrl" class="form-control" placeholder="أو ضع رابط الصورة المباشر هنا..." style="margin-top: 10px;">
+                                <div class="preview-container" id="prodImgPreview"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>وصف المنتج</label>
+                                <textarea id="prodDesc" class="form-control" rows="3" placeholder="تفاصيل ومواصفات المنتج..."></textarea>
+                            </div>
+
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ المنتج</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetProductForm()">إلغاء</button>
+                            </div>
+                        </form>
+
+                        <hr style="border-color: var(--card-border); margin: 30px 0;">
+
+                        <h3 style="margin-bottom: 20px;">قائمة المنتجات الحالية</h3>
+                        <div class="table-responsive">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>الصورة</th>
+                                        <th>الاسم</th>
+                                        <th>القسم</th>
+                                        <th>السعر</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminProductsTable">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Panel 2: Services Management -->
+                    <div id="servicesTab" class="dash-panel">
+                        <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-plus-circle"></i> إضافة / تعديل خدمة مركز السيارات</h3>
+                        
+                        <form id="serviceForm" onsubmit="saveService(event)">
+                            <input type="hidden" id="servId">
+                            <div class="form-group">
+                                <label>اسم الخدمة</label>
+                                <input type="text" id="servName" class="form-control" placeholder="مثال: تركيب وتشفير الشاشات والكاميرات" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>صورة الخدمة (اختر من جهازك أو ضع رابط)</label>
+                                <div class="file-upload-box">
+                                    <i class="fa-solid fa-wrench" style="font-size: 2rem; color: var(--success); margin-bottom: 10px;"></i>
+                                    <p>اختر صورة الخدمة من جهازك</p>
+                                    <input type="file" id="servFile" accept="image/*" onchange="previewFile(this, 'servImgPreview')">
+                                </div>
+                                <input type="url" id="servImgUrl" class="form-control" placeholder="أو ضع رابط صورة الخدمة..." style="margin-top: 10px;">
+                                <div class="preview-container" id="servImgPreview"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>وصف تفصيلي للخدمة</label>
+                                <textarea id="servDesc" class="form-control" rows="3" placeholder="اكتب تفاصيل ومزايا الخدمة المتاحة في المركز..." required></textarea>
+                            </div>
+
+                            <div style="display: flex; gap: 10px;">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ الخدمة</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetServiceForm()">إلغاء</button>
+                            </div>
+                        </form>
+
+                        <hr style="border-color: var(--card-border); margin: 30px 0;">
+
+                        <h3 style="margin-bottom: 20px;">الخدمات المعروضة حالياً</h3>
+                        <div class="table-responsive">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>الصورة</th>
+                                        <th>اسم الخدمة</th>
+                                        <th>الوصف</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminServicesTable">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Panel 3: Posts Management -->
+                    <div id="postsTab" class="dash-panel">
+                        <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-pen-to-square"></i> إضافة منشور / فيديو جديد للعملاء</h3>
+                        
+                        <form id="postForm" onsubmit="savePost(event)">
+                            <div class="form-group">
+                                <label>عنوان المنشور / العرض</label>
+                                <input type="text" id="postTitle" class="form-control" placeholder="مثال: خصم 20% على تلميع الفوانيس بـ LED" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>محتوى المنشور</label>
+                                <textarea id="postText" class="form-control" rows="3" placeholder="اكتب تفاصيل العرض أو المنشور هنا..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>ملف الميديا (اختر صورة أو فيديو من جهازك)</label>
+                                <div class="file-upload-box">
+                                    <i class="fa-solid fa-file-video" style="font-size: 2rem; color: var(--accent); margin-bottom: 10px;"></i>
+                                    <p>اختر صورة أو فيديو من جهازك (Image / Video)</p>
+                                    <input type="file" id="postFile" accept="image/*,video/*" onchange="previewFile(this, 'postMediaPreview')">
+                                </div>
+                                <input type="url" id="postMediaUrl" class="form-control" placeholder="أو ضع رابط صورة / فيديو مباشر..." style="margin-top: 10px;">
+                                <div class="preview-container" id="postMediaPreview"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>ربط بمنتج لشراء فوري (اختياري)</label>
+                                <select id="postLinkedProduct" class="form-control">
+                                    <option value="">-- بدون ربط بمنتج --</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> نشر العرض</button>
+                        </form>
+
+                        <hr style="border-color: var(--card-border); margin: 30px 0;">
+
+                        <h3 style="margin-bottom: 20px;">المنشورات الحالية</h3>
+                        <div class="table-responsive">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>الميديا</th>
+                                        <th>العنوان</th>
+                                        <th>تاريخ النشر</th>
+                                        <th>المنتج المرتبط</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminPostsTable">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Panel 4: Orders Management -->
+                    <div id="ordersTab" class="dash-panel">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                            <h3><i class="fa-solid fa-truck-ramp-box"></i> إدارة طلبات الشراء</h3>
+                            <button class="btn btn-danger btn-sm" onclick="clearAllOrders()"><i class="fa-solid fa-trash"></i> مسح جميع الطلبات</button>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>رقم الطلب</th>
+                                        <th>العميل</th>
+                                        <th>الهاتف</th>
+                                        <th>الإجمالي</th>
+                                        <th>الحالة</th>
+                                        <th>التاريخ</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminOrdersTable">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Panel 5: Hero Slides Management -->
+                    <div id="slidesTab" class="dash-panel">
+                        <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-sliders"></i> التحكم بخلفيات الواجهة والنصوص المتغيرة</h3>
+                        
+                        <form id="slideForm" onsubmit="saveSlide(event)">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>العنوان الرئيسي</label>
+                                    <input type="text" id="slideTitle" class="form-control" placeholder="مثال: أفضل إكسسوارات السيارات" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>النص الفرعي</label>
+                                    <input type="text" id="slideSub" class="form-control" placeholder="تجهيزات بأعلى جودة وضمان" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>صورة الخلفية (من جهازك أو رابط)</label>
+                                <div class="file-upload-box">
+                                    <i class="fa-solid fa-image" style="font-size: 2rem; color: var(--info); margin-bottom: 10px;"></i>
+                                    <p>اختر صورة الخلفية من جهازك</p>
+                                    <input type="file" id="slideFile" accept="image/*" onchange="previewFile(this, 'slideImgPreview')">
+                                </div>
+                                <input type="url" id="slideImgUrl" class="form-control" placeholder="أو رابط الصورة..." style="margin-top: 10px;">
+                                <div class="preview-container" id="slideImgPreview"></div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> إضافة شريحة خلفية</button>
+                        </form>
+
+                        <hr style="border-color: var(--card-border); margin: 30px 0;">
+
+                        <h3>الشرائح الحالية</h3>
+                        <div class="table-responsive" style="margin-top:15px;">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>الخلفية</th>
+                                        <th>العنوان</th>
+                                        <th>النص الفرعي</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminSlidesTable">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Panel 6: Reviews Management -->
+                    <div id="reviewsTab" class="dash-panel">
+                        <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-comments"></i> إدارة تقييمات العملاء</h3>
+                        <div class="table-responsive">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>التقييم</th>
+                                        <th>التعليق</th>
+                                        <th>التاريخ</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminReviewsTable">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- SHOPPING CART MODAL -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('cartModal')"><i class="fa-solid fa-xmark"></i></span>
+            <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-cart-shopping"></i> سلة الشراء</h3>
+            
+            <div id="cartItemsList">
+                <!-- Dynamic Items -->
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--card-border);">
+                <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 800; margin-bottom: 15px;">
+                    <span>الإجمالي:</span>
+                    <span id="cartTotalPrice" style="color: var(--accent);">0 ج.م</span>
+                </div>
+
+                <div class="form-group">
+                    <label>اسمك الكريـم</label>
+                    <input type="text" id="custName" class="form-control" placeholder="أدخل اسمك بالكامل">
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف / الواتساب</label>
+                    <input type="tel" id="custPhone" class="form-control" placeholder="010XXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label>العنوان تفصيلياً</label>
+                    <input type="text" id="custAddress" class="form-control" placeholder="المدينة - الشارع - رقم العمارة">
+                </div>
+
+                <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="checkoutOrder()">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> إرسال الطلب عبر الواتساب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD REVIEW MODAL -->
+    <div class="modal" id="addReviewModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('addReviewModal')"><i class="fa-solid fa-xmark"></i></span>
+            <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-star"></i> أضف تقييمك للمتجر</h3>
+            
+            <form onsubmit="submitReview(event)">
+                <div class="form-group">
+                    <label>الاسم</label>
+                    <input type="text" id="revName" class="form-control" placeholder="اسمك" required>
+                </div>
+                <div class="form-group">
+                    <label>التقييم</label>
+                    <select id="revStars" class="form-control" required>
+                        <option value="5">⭐⭐⭐⭐⭐ (5/5) ممتاز جداً</option>
+                        <option value="4">⭐⭐⭐⭐ (4/5) جيد جداً</option>
+                        <option value="3">⭐⭐⭐ (3/5) متوسط</option>
+                        <option value="2">⭐⭐ (2/5) مقبول</option>
+                        <option value="1">⭐ (1/5) سيء</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>رأيك في المنتجات والخدمة</label>
+                    <textarea id="revComment" class="form-control" rows="3" placeholder="اكتب تجريتك معنا..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">إرسال التقييم</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FLOATING SCROLL TO TOP ARROW BUTTON -->
+    <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()" title="الصعود للأعلى">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2026 جميع الحقوق محفوظة - متجر وتجهيزات السيارات الإلكتروني</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Engine -->
+    <script>
+        /* Global App State & LocalStorage Keys */
+        const STORAGE_KEY_PRODUCTS = 'autozone_products_v3';
+        const STORAGE_KEY_SERVICES = 'autozone_services_v3';
+        const STORAGE_KEY_POSTS = 'autozone_posts_v3';
+        const STORAGE_KEY_SLIDES = 'autozone_slides_v3';
+        const STORAGE_KEY_ORDERS = 'autozone_orders_v3';
+        const STORAGE_KEY_REVIEWS = 'autozone_reviews_v3';
+
+        // Default Data Defaults
+        const defaultProducts = [
+            { id: 1, name: 'شاشة سيارة اندرويد 10 بوصة HD', category: 'إلكترونيات', price: 3400, badge: 'الأكثر مبيعاً', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80', desc: 'شاشة لمس بدقة عالية تدعم Carplay و Android Auto مع ذاكرة 32 جيجا.' },
+            { id: 2, name: 'طقم ليد نايت بريكر بقوة 120 واط', category: 'إضاءات', price: 1250, badge: 'خصم خاص', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80', desc: 'إضاءة بيضاء ثلجية قوية جداً برؤية ممتازة في الطرق المظلمة.' },
+            { id: 3, name: 'غطاء سيارة وتربروف جلد طبيعي', category: 'فرش وراحة', price: 950, badge: 'جديد', img: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=600&q=80', desc: 'مقاوم للماء والشمس والخدوش مع طبقة مبطنة لحماية طلاء السيارة.' }
+        ];
+
+        const defaultServices = [
+            { id: 101, name: 'تركيب وتشفير الشاشات والكاميرات', desc: 'تركيب كافة أنواع الشاشات الذكية والكاميرات الخلفية والأمامية بدون تقطيع في أسلاك الفابريكة مع ضمان كامل.', img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80' },
+            { id: 102, name: 'تعديل وتلميع الفوانيس بـ LED', desc: 'تلميع عدسات الفوانيس الأمامية وإزالة الاصفرار مع تركيب أطقم إضاءات LED عالية القوة والتركيز.', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80' },
+            { id: 103, name: 'تفصيل وتنجيد الفرش الجلد الفاخر', desc: 'تنجيد وصيانة الصالون الداخلي للسيارات بأفخم أنواع الجلد الألماني والمقاعد الطبية.', img: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=600&q=80' }
+        ];
+
+        const defaultSlides = [
+            { id: 1, title: 'أفخم إكسسوارات وخدمات السيارات بأعلى جودة', sub: 'تجهيزات شاشات، إضاءات LED، وفرش جلد فاخر لجميع أنواع السيارات', img: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80' },
+            { id: 2, title: 'عروض حصرية وخصومات تصل إلى 30%', sub: 'جدد عربيتك بأحدث التقنيات وأنظمة الصوت والإضاءة الذكية', img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80' }
+        ];
+
+        const defaultPosts = [
+            { id: 1, title: 'تجهيز كامل لسيارة سيراتو 2024 🔥', text: 'تم تركيب شاشة اندرويد 10 بوصة + طقم إضاءة ليد عالي واط + فرش جلد كامل.', mediaType: 'image', mediaUrl: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80', date: '2026-04-10', linkedProdId: 1 }
+        ];
+
+        const defaultReviews = [
+            { id: 1, name: 'أحمد محمود', stars: 5, comment: 'خامات ممتازة جداً وتوصيل سريع وشاشة الاندرويد شغالة طلقة!', date: '2026-04-12' }
+        ];
+
+        // App Data Initialization
+        let products = JSON.parse(localStorage.getItem(STORAGE_KEY_PRODUCTS)) || defaultProducts;
+        let services = JSON.parse(localStorage.getItem(STORAGE_KEY_SERVICES)) || defaultServices;
+        let slides = JSON.parse(localStorage.getItem(STORAGE_KEY_SLIDES)) || defaultSlides;
+        let posts = JSON.parse(localStorage.getItem(STORAGE_KEY_POSTS)) || defaultPosts;
+        let orders = JSON.parse(localStorage.getItem(STORAGE_KEY_ORDERS)) || [];
+        let reviews = JSON.parse(localStorage.getItem(STORAGE_KEY_REVIEWS)) || defaultReviews;
+
+        let cart = [];
+        let activeCategory = 'all';
+        let currentSlideIdx = 0;
+        let slideInterval = null;
+
+        /* Initialization */
+        document.addEventListener('DOMContentLoaded', () => {
+            renderHeroSlides();
+            renderProducts();
+            renderServices();
+            renderPosts();
+            renderReviews();
+            renderAdminAll();
+
+            // Scroll-To-Top Button Scroll Observer
+            window.addEventListener('scroll', () => {
+                const scrollTopBtn = document.getElementById('scrollTopBtn');
+                if (window.scrollY > 300) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+            });
+        });
+
+        /* Smooth Scroll To Top Handler */
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        /* View Switcher */
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            if (viewName === 'store') document.getElementById('storeView').classList.add('active');
+            if (viewName === 'services') document.getElementById('servicesView').classList.add('active');
+            if (viewName === 'posts') document.getElementById('postsView').classList.add('active');
+            if (viewName === 'reviews') document.getElementById('reviewsView').classList.add('active');
+            if (viewName === 'dashboard') document.getElementById('dashboardView').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* Hero Slider Controller */
+        function renderHeroSlides() {
+            const slider = document.getElementById('heroSlider');
+            const dots = document.getElementById('sliderDots');
+            
+            slider.querySelectorAll('.slide').forEach(e => e.remove());
+            dots.innerHTML = '';
+
+            slides.forEach((s, idx) => {
+                const slideEl = document.createElement('div');
+                slideEl.className = `slide ${idx === 0 ? 'active' : ''}`;
+                slideEl.style.backgroundImage = `url('${s.img}')`;
+                slideEl.innerHTML = `
+                    <div class="slide-overlay"></div>
+                    <div class="container">
+                        <div class="slide-content">
+                            <span class="badge badge-primary">عروض ممتازة</span>
+                            <h1>${s.title}</h1>
+                            <p>${s.sub}</p>
+                            <button class="btn btn-primary" onclick="switchView('store')"><i class="fa-solid fa-cart-shopping"></i> تصفح المنتجات الآن</button>
+                        </div>
+                    </div>
+                `;
+                slider.appendChild(slideEl);
+
+                const dot = document.createElement('div');
+                dot.className = `dot ${idx === 0 ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(idx);
+                dots.appendChild(dot);
+            });
+
+            startSlideTimer();
+        }
+
+        function startSlideTimer() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(() => moveSlide(1), 5000);
+        }
+
+        function moveSlide(dir) {
+            const allSlides = document.querySelectorAll('.slide');
+            const allDots = document.querySelectorAll('.dot');
+            if (!allSlides.length) return;
+
+            allSlides[currentSlideIdx].classList.remove('active');
+            if (allDots[currentSlideIdx]) allDots[currentSlideIdx].classList.remove('active');
+
+            currentSlideIdx = (currentSlideIdx + dir + allSlides.length) % allSlides.length;
+
+            allSlides[currentSlideIdx].classList.add('active');
+            if (allDots[currentSlideIdx]) allDots[currentSlideIdx].classList.add('active');
+        }
+
+        function goToSlide(idx) {
+            const dir = idx - currentSlideIdx;
+            moveSlide(dir);
+        }
+
+        /* Services Section Render */
+        function renderServices() {
+            const grid = document.getElementById('servicesGrid');
+            grid.innerHTML = '';
+
+            if (services.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">لا توجد خدمات مضافة حالياً.</div>`;
+                return;
+            }
+
+            services.forEach(s => {
+                grid.innerHTML += `
+                    <div class="service-card">
+                        <div class="service-img-wrap">
+                            <img src="${s.img}" alt="${s.name}" onerror="this.src='https://via.placeholder.com/400x300?text=Service'">
+                        </div>
+                        <div class="service-info">
+                            <h3 class="service-title">${s.name}</h3>
+                            <p class="service-desc">${s.desc}</p>
+                            <div class="service-bottom">
+                                <a href="https://wa.me/201000000000?text=استفسار عن خدمة: ${encodeURIComponent(s.name)}" target="_blank" class="btn btn-success btn-sm" style="width: 100%;">
+                                    <i class="fa-brands fa-whatsapp"></i> استفسر أو احجز الآن
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        /* Products Catalog Render */
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            let filtered = products.filter(p => {
+                const matchesCat = activeCategory === 'all' || p.category === activeCategory;
+                const searchQ = document.getElementById('searchInput').value.toLowerCase();
+                const matchesSearch = p.name.toLowerCase().includes(searchQ) || p.desc.toLowerCase().includes(searchQ);
+                return matchesCat && matchesSearch;
+            });
+
+            document.getElementById('totalProductsCount').innerText = `${filtered.length} منتج متوفر`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--text-muted);">لا توجد منتجات مطابقة للبحث.</div>`;
+                return;
+            }
+
+            filtered.forEach(p => {
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <div class="product-img-wrap">
+                            ${p.badge ? `<span class="badge badge-accent product-badge">${p.badge}</span>` : ''}
+                            <img src="${p.img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400x300?text=AutoZone'">
+                        </div>
+                        <div class="product-info">
+                            <span class="product-cat">${p.category}</span>
+                            <h3 class="product-title">${p.name}</h3>
+                            <p class="product-desc">${p.desc}</p>
+                            <div class="product-bottom">
+                                <span class="product-price">${p.price} ج.م</span>
+                                <button class="btn btn-primary btn-sm" onclick="addToCart(${p.id})">
+                                    <i class="fa-solid fa-cart-plus"></i> إضافة للسلة
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProducts();
+        }
+
+        function handleSearch() {
+            renderProducts();
+        }
+
+        /* Shopping Cart Actions */
+        function addToCart(prodId) {
+            const prod = products.find(p => p.id === prodId);
+            if (!prod) return;
+
+            const existing = cart.find(c => c.id === prodId);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...prod, qty: 1 });
+            }
+            updateCartBadge();
+            alert(`تمت إضافة ${prod.name} إلى السلة!`);
+        }
+
+        function updateCartBadge() {
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cartBadge').innerText = totalQty;
+            renderCartModal();
+        }
+
+        function renderCartModal() {
+            const list = document.getElementById('cartItemsList');
+            list.innerHTML = '';
+
+            if (cart.length === 0) {
+                list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted)">السلة فارغة حالياً</div>`;
+                document.getElementById('cartTotalPrice').innerText = '0 ج.م';
+                return;
+            }
+
+            let total = 0;
+            cart.forEach(item => {
+                const subtotal = item.price * item.qty;
+                total += subtotal;
+                list.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${item.img}" alt="${item.name}">
+                        <div class="cart-item-details">
+                            <div class="cart-item-title">${item.name}</div>
+                            <div class="cart-item-price">${item.price} ج.م</div>
+                        </div>
+                        <div class="cart-qty-ctrl">
+                            <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="removeFromCart(${item.id})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+
+            document.getElementById('cartTotalPrice').innerText = `${total} ج.م`;
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(c => c.id === id);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) {
+                cart = cart.filter(c => c.id !== id);
+            }
+            updateCartBadge();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(c => c.id !== id);
+            updateCartBadge();
+        }
+
+        function checkoutOrder() {
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+            const address = document.getElementById('custAddress').value.trim();
+
+            if (cart.length === 0) {
+                alert('السلة فارغة!');
+                return;
+            }
+            if (!name || !phone || !address) {
+                alert('يرجى ملء كافة بيانات العميل (الاسم، الهاتف، العنوان)');
+                return;
+            }
+
+            const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+            const orderObj = {
+                id: 'ORD-' + Math.floor(1000 + Math.random() * 9000),
+                customerName: name,
+                phone: phone,
+                address: address,
+                items: cart,
+                totalPrice: total,
+                status: 'جديد',
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            orders.unshift(orderObj);
+            localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(orders));
+
+            let msg = `*طلب جديد من متجر AutoZone*%0A`;
+            msg += `*رقم الطلب:* ${orderObj.id}%0A`;
+            msg += `*اسم العميل:* ${name}%0A`;
+            msg += `*الهاتف:* ${phone}%0A`;
+            msg += `*العنوان:* ${address}%0A%0A`;
+            msg += `*المنتجات:*%0A`;
+            cart.forEach(i => {
+                msg += `- ${i.name} (${i.qty}x) = ${i.price * i.qty} ج.م%0A`;
+            });
+            msg += `%0A*الإجمالي النهائي:* ${total} ج.م`;
+
+            window.open(`https://wa.me/201000000000?text=${msg}`, '_blank');
+
+            cart = [];
+            updateCartBadge();
+            closeModal('cartModal');
+            renderAdminOrders();
+            alert('تم تسجيل طلبك بنجاح وجاري توجيهك للواتساب للتأكيد!');
+        }
+
+        /* Posts Feed Render */
+        function renderPosts() {
+            const grid = document.getElementById('postsGrid');
+            grid.innerHTML = '';
+
+            if (posts.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">لا توجد منشورات حالياً.</div>`;
+                return;
+            }
+
+            posts.forEach(p => {
+                let mediaHtml = '';
+                if (p.mediaType === 'video') {
+                    mediaHtml = `<video src="${p.mediaUrl}" controls></video>`;
+                } else {
+                    mediaHtml = `<img src="${p.mediaUrl}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/600x300?text=AutoZone'">`;
+                }
+
+                let linkedHtml = '';
+                if (p.linkedProdId) {
+                    const prod = products.find(x => x.id === p.linkedProdId);
+                    if (prod) {
+                        linkedHtml = `
+                            <div class="post-linked-prod">
+                                <div>
+                                    <div style="font-weight: 700; font-size: 0.85rem; color: #fff;">${prod.name}</div>
+                                    <div style="color: var(--accent); font-weight: 800; font-size: 0.9rem;">${prod.price} ج.م</div>
+                                </div>
+                                <button class="btn btn-primary btn-sm" onclick="addToCart(${prod.id})"><i class="fa-solid fa-cart-plus"></i> شراء</button>
+                            </div>
+                        `;
+                    }
+                }
+
+                grid.innerHTML += `
+                    <div class="post-card">
+                        <div class="post-media">${mediaHtml}</div>
+                        <div class="post-body">
+                            <span class="post-date"><i class="fa-regular fa-calendar"></i> ${p.date}</span>
+                            <h3 class="post-title">${p.title}</h3>
+                            <p class="post-text">${p.text}</p>
+                            ${linkedHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        /* Reviews Render */
+        function renderReviews() {
+            const grid = document.getElementById('reviewsGrid');
+            grid.innerHTML = '';
+
+            if (reviews.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">لا توجد تقييمات حالياً.</div>`;
+                return;
+            }
+
+            let sum = reviews.reduce((acc, r) => acc + Number(r.stars), 0);
+            let avg = (sum / reviews.length).toFixed(1);
+            document.getElementById('avgRatingNum').innerText = avg;
+            document.getElementById('totalReviewsCount').innerText = `بناءً على ${reviews.length} تقييم`;
+
+            reviews.forEach(r => {
+                let starsHtml = '';
+                for (let i = 0; i < 5; i++) {
+                    starsHtml += `<i class="fa-${i < r.stars ? 'solid' : 'regular'} fa-star"></i>`;
+                }
+
+                grid.innerHTML += `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <span class="reviewer-name">${r.name}</span>
+                            <span class="stars">${starsHtml}</span>
+                        </div>
+                        <p style="font-size: 0.9rem; color: #d1d1d6; line-height: 1.5;">"${r.comment}"</p>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); text-align: left;">${r.date}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function submitReview(e) {
+            e.preventDefault();
+            const name = document.getElementById('revName').value.trim();
+            const stars = document.getElementById('revStars').value;
+            const comment = document.getElementById('revComment').value.trim();
+
+            const newRev = {
+                id: Date.now(),
+                name: name,
+                stars: Number(stars),
+                comment: comment,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            reviews.unshift(newRev);
+            localStorage.setItem(STORAGE_KEY_REVIEWS, JSON.stringify(reviews));
+            renderReviews();
+            renderAdminReviews();
+            closeModal('addReviewModal');
+            alert('شكراً لك! تم إضافة تقييمك بنجاح.');
+        }
+
+        /* Helpers for File Input Base64 Converter */
+        function previewFile(inputEl, previewContainerId) {
+            const container = document.getElementById(previewContainerId);
+            container.innerHTML = '';
+            container.style.display = 'none';
+
+            if (inputEl.files && inputEl.files[0]) {
+                const file = inputEl.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    container.style.display = 'block';
+                    if (file.type.startsWith('video/')) {
+                        container.innerHTML = `<video src="${e.target.result}" controls></video>`;
+                    } else {
+                        container.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function getFileBase64(fileInput) {
+            return new Promise((resolve) => {
+                if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve(e.target.result);
+                    reader.readAsDataURL(fileInput.files[0]);
+                } else {
+                    resolve(null);
+                }
+            });
+        }
+
+        /* ADMIN DASHBOARD LOGIC */
+        function switchAdminTab(tabId) {
+            document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function renderAdminAll() {
+            renderAdminProducts();
+            renderAdminServices();
+            renderAdminPosts();
+            renderAdminOrders();
+            renderAdminSlides();
+            renderAdminReviews();
+            populatePostLinkedProductDropdown();
+        }
+
+        /* Admin Services Management */
+        function renderAdminServices() {
+            const tbody = document.getElementById('adminServicesTable');
+            tbody.innerHTML = '';
+            services.forEach(s => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${s.img}" class="table-img" onerror="this.src='https://via.placeholder.com/50'"></td>
+                        <td><strong>${s.name}</strong></td>
+                        <td style="max-width: 300px; font-size:0.85rem; color:var(--text-muted);">${s.desc}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="editService(${s.id})"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteService(${s.id})"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function saveService(e) {
+            e.preventDefault();
+            const id = document.getElementById('servId').value;
+            const name = document.getElementById('servName').value.trim();
+            const desc = document.getElementById('servDesc').value.trim();
+            const urlInput = document.getElementById('servImgUrl').value.trim();
+            const fileInput = document.getElementById('servFile');
+
+            let imageMedia = await getFileBase64(fileInput) || urlInput || 'https://via.placeholder.com/400x300?text=Service';
+
+            if (id) {
+                const idx = services.findIndex(s => s.id == id);
+                if (idx !== -1) {
+                    services[idx] = { ...services[idx], name, desc, img: imageMedia };
+                }
+            } else {
+                const newS = { id: Date.now(), name, desc, img: imageMedia };
+                services.unshift(newS);
+            }
+
+            localStorage.setItem(STORAGE_KEY_SERVICES, JSON.stringify(services));
+            resetServiceForm();
+            renderServices();
+            renderAdminServices();
+            alert('تم حفظ الخدمة بنجاح!');
+        }
+
+        function editService(id) {
+            const s = services.find(x => x.id === id);
+            if (!s) return;
+            document.getElementById('servId').value = s.id;
+            document.getElementById('servName').value = s.name;
+            document.getElementById('servDesc').value = s.desc;
+            document.getElementById('servImgUrl').value = s.img.startsWith('data:') ? '' : s.img;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteService(id) {
+            if (confirm('هل أنت تأكد من حذف هذه الخدمة؟')) {
+                services = services.filter(s => s.id !== id);
+                localStorage.setItem(STORAGE_KEY_SERVICES, JSON.stringify(services));
+                renderServices();
+                renderAdminServices();
+            }
+        }
+
+        function resetServiceForm() {
+            document.getElementById('serviceForm').reset();
+            document.getElementById('servId').value = '';
+            document.getElementById('servImgPreview').innerHTML = '';
+        }
+
+        /* Admin Product Management */
+        function renderAdminProducts() {
+            const tbody = document.getElementById('adminProductsTable');
+            tbody.innerHTML = '';
+            products.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${p.img}" class="table-img" onerror="this.src='https://via.placeholder.com/50'"></td>
+                        <td><strong>${p.name}</strong></td>
+                        <td><span class="badge badge-info">${p.category}</span></td>
+                        <td style="color: var(--accent); font-weight:800;">${p.price} ج.م</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="editProduct(${p.id})"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function saveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('prodId').value;
+            const name = document.getElementById('prodName').value.trim();
+            const cat = document.getElementById('prodCategory').value;
+            const price = Number(document.getElementById('prodPrice').value);
+            const badge = document.getElementById('prodBadge').value;
+            const desc = document.getElementById('prodDesc').value.trim();
+            const urlInput = document.getElementById('prodImgUrl').value.trim();
+            const fileInput = document.getElementById('prodFile');
+
+            let imageMedia = await getFileBase64(fileInput) || urlInput || 'https://via.placeholder.com/400x300?text=AutoZone';
+
+            if (id) {
+                const idx = products.findIndex(p => p.id == id);
+                if (idx !== -1) {
+                    products[idx] = { ...products[idx], name, category: cat, price, badge, desc, img: imageMedia };
+                }
+            } else {
+                const newP = { id: Date.now(), name, category: cat, price, badge, desc, img: imageMedia };
+                products.unshift(newP);
+            }
+
+            localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
+            resetProductForm();
+            renderProducts();
+            renderAdminProducts();
+            populatePostLinkedProductDropdown();
+            alert('تم حفظ المنتج بنجاح!');
+        }
+
+        function editProduct(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('prodId').value = p.id;
+            document.getElementById('prodName').value = p.name;
+            document.getElementById('prodCategory').value = p.category;
+            document.getElementById('prodPrice').value = p.price;
+            document.getElementById('prodBadge').value = p.badge || '';
+            document.getElementById('prodDesc').value = p.desc;
+            document.getElementById('prodImgUrl').value = p.img.startsWith('data:') ? '' : p.img;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteProduct(id) {
+            if (confirm('هل أنت تأكد من حذف هذا المنتج؟')) {
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
+                renderProducts();
+                renderAdminProducts();
+                populatePostLinkedProductDropdown();
+            }
+        }
+
+        function resetProductForm() {
+            document.getElementById('productForm').reset();
+            document.getElementById('prodId').value = '';
+            document.getElementById('prodImgPreview').innerHTML = '';
+        }
+
+        /* Admin Posts & Video Management */
+        function populatePostLinkedProductDropdown() {
+            const sel = document.getElementById('postLinkedProduct');
+            sel.innerHTML = '<option value="">-- بدون ربط بمنتج --</option>';
+            products.forEach(p => {
+                sel.innerHTML += `<option value="${p.id}">${p.name} (${p.price} ج.م)</option>`;
+            });
+        }
+
+        async function savePost(e) {
+            e.preventDefault();
+            const title = document.getElementById('postTitle').value.trim();
+            const text = document.getElementById('postText').value.trim();
+            const linkedId = document.getElementById('postLinkedProduct').value;
+            const urlInput = document.getElementById('postMediaUrl').value.trim();
+            const fileInput = document.getElementById('postFile');
+
+            let mediaData = await getFileBase64(fileInput) || urlInput || 'https://via.placeholder.com/600x300?text=AutoZone';
+            let mediaType = 'image';
+
+            if (fileInput.files && fileInput.files[0]) {
+                if (fileInput.files[0].type.startsWith('video/')) mediaType = 'video';
+            } else if (urlInput.match(/\.(mp4|webm|ogg)$/i)) {
+                mediaType = 'video';
+            }
+
+            const newPost = {
+                id: Date.now(),
+                title: title,
+                text: text,
+                mediaType: mediaType,
+                mediaUrl: mediaData,
+                linkedProdId: linkedId ? Number(linkedId) : null,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            posts.unshift(newPost);
+            localStorage.setItem(STORAGE_KEY_POSTS, JSON.stringify(posts));
+            document.getElementById('postForm').reset();
+            document.getElementById('postMediaPreview').innerHTML = '';
+            renderPosts();
+            renderAdminPosts();
+            alert('تم إضافه المنشور/الفيديو بنجاح!');
+        }
+
+        function renderAdminPosts() {
+            const tbody = document.getElementById('adminPostsTable');
+            tbody.innerHTML = '';
+            posts.forEach(p => {
+                let linkedName = 'غير مرتبط';
+                if (p.linkedProdId) {
+                    const found = products.find(x => x.id === p.linkedProdId);
+                    if (found) linkedName = found.name;
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><span class="badge ${p.mediaType === 'video' ? 'badge-accent' : 'badge-info'}">${p.mediaType === 'video' ? 'فيديو' : 'صورة'}</span></td>
+                        <td><strong>${p.title}</strong></td>
+                        <td>${p.date}</td>
+                        <td>${linkedName}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deletePost(${p.id})"><i class="fa-solid fa-trash"></i> حذف</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deletePost(id) {
+            if (confirm('هل أنت تأكد من حذف هذا المنشور؟')) {
+                posts = posts.filter(p => p.id !== id);
+                localStorage.setItem(STORAGE_KEY_POSTS, JSON.stringify(posts));
+                renderPosts();
+                renderAdminPosts();
+            }
+        }
+
+        /* Admin Orders Management */
+        function renderAdminOrders() {
+            const tbody = document.getElementById('adminOrdersTable');
+            tbody.innerHTML = '';
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted)">لا توجد طلبات حتي الآن</td></tr>`;
+                return;
+            }
+
+            orders.forEach(o => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${o.id}</strong></td>
+                        <td>${o.customerName}</td>
+                        <td>${o.phone}</td>
+                        <td style="color:var(--accent); font-weight:800;">${o.totalPrice} ج.م</td>
+                        <td><span class="badge badge-success">${o.status}</span></td>
+                        <td>${o.date}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteOrder('${o.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteOrder(orderId) {
+            if (confirm(`هل ترغب في حذف الطلب ${orderId}؟`)) {
+                orders = orders.filter(o => o.id !== orderId);
+                localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(orders));
+                renderAdminOrders();
+            }
+        }
+
+        function clearAllOrders() {
+            if (confirm('هل أنت متأكد من مسح جميع الطلبات بشكل نهائي؟')) {
+                orders = [];
+                localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(orders));
+                renderAdminOrders();
+            }
+        }
+
+        /* Admin Hero Slides Management */
+        async function saveSlide(e) {
+            e.preventDefault();
+            const title = document.getElementById('slideTitle').value.trim();
+            const sub = document.getElementById('slideSub').value.trim();
+            const urlInput = document.getElementById('slideImgUrl').value.trim();
+            const fileInput = document.getElementById('slideFile');
+
+            let imgData = await getFileBase64(fileInput) || urlInput || 'https://via.placeholder.com/1200x800?text=AutoZone';
+
+            const newSlide = { id: Date.now(), title, sub, img: imgData };
+            slides.push(newSlide);
+            localStorage.setItem(STORAGE_KEY_SLIDES, JSON.stringify(slides));
+            document.getElementById('slideForm').reset();
+            document.getElementById('slideImgPreview').innerHTML = '';
+            renderHeroSlides();
+            renderAdminSlides();
+            alert('تم إضافة شريحة الخلفية بنجاح!');
+        }
+
+        function renderAdminSlides() {
+            const tbody = document.getElementById('adminSlidesTable');
+            tbody.innerHTML = '';
+            slides.forEach(s => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${s.img}" class="table-img"></td>
+                        <td><strong>${s.title}</strong></td>
+                        <td>${s.sub}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteSlide(${s.id})"><i class="fa-solid fa-trash"></i> حذف</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteSlide(id) {
+            if (slides.length <= 1) {
+                alert('يجب الإبقاء على شريحة خلفية واحدة على الأقل للواجهة!');
+                return;
+            }
+            if (confirm('هل تأكد حذف شريحة الخلفية هذه؟')) {
+                slides = slides.filter(s => s.id !== id);
+                localStorage.setItem(STORAGE_KEY_SLIDES, JSON.stringify(slides));
+                renderHeroSlides();
+                renderAdminSlides();
+            }
+        }
+
+        /* Admin Reviews Management */
+        function renderAdminReviews() {
+            const tbody = document.getElementById('adminReviewsTable');
+            tbody.innerHTML = '';
+            reviews.forEach(r => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${r.name}</strong></td>
+                        <td><span style="color:var(--accent)">⭐ ${r.stars}/5</span></td>
+                        <td>${r.comment}</td>
+                        <td>${r.date}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteReview(${r.id})"><i class="fa-solid fa-trash"></i> حذف</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteReview(id) {
+            if (confirm('هل أنت تأكد من حذف التقييم؟')) {
+                reviews = reviews.filter(r => r.id !== id);
+                localStorage.setItem(STORAGE_KEY_REVIEWS, JSON.stringify(reviews));
+                renderReviews();
+                renderAdminReviews();
+            }
+        }
+
+        /* Modal Controllers */
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+    </script>
+</body>
+</html>

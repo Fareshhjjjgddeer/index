@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار المفاجأة - العروسة الرائعة 3D</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls for Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Cairo', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #a1c4fd 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        /* Glassmorphism styling */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 15px 35px rgba(225, 29, 72, 0.15);
+        }
+
+        .glass-btn {
+            background: linear-gradient(135deg, #ff4b2b, #ff416c);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 20px rgba(255, 65, 108, 0.35);
+        }
+
+        .glass-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(255, 65, 108, 0.5);
+        }
+
+        .glass-btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #fbcfe8;
+            transition: all 0.25s ease;
+        }
+
+        .option-card:hover {
+            border-color: #ec4899;
+            background: #fff5f8;
+            transform: translateX(-4px);
+        }
+
+        .option-card.correct {
+            background: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #15803d !important;
+        }
+
+        .option-card.wrong {
+            background: #ffe4e6 !important;
+            border-color: #f43f5e !important;
+            color: #be123c !important;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.8; filter: brightness(1); }
+            50% { opacity: 1; filter: brightness(1.25); }
+        }
+
+        .glow-title {
+            animation: pulseGlow 2.5s infinite ease-in-out;
+            text-shadow: 0 0 18px rgba(236, 72, 153, 0.5);
+        }
+
+        /* Three.js WebGL Container */
+        #webgl-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        /* Float Particles Background Animation */
+        @keyframes floatParticle {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
+            50% { opacity: 0.7; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .bg-particle {
+            position: absolute;
+            pointer-events: none;
+            animation: floatParticle 8s infinite linear;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff416c;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-between min-h-screen p-3 md:p-6 relative overflow-x-hidden">
+
+    <!-- Dynamic Background Floating Elements -->
+    <div id="bg-decorations" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- MAIN GAME CARD -->
+    <div id="quiz-container" class="w-full max-w-xl z-20 my-auto transition-all duration-500">
+        <div class="glass-panel rounded-3xl p-5 md:p-8 relative overflow-hidden text-center shadow-2xl">
+            
+            <!-- Header Title -->
+            <div class="mb-5">
+                <span class="inline-block px-4 py-1.5 bg-pink-100 text-pink-700 font-bold text-xs md:text-sm rounded-full mb-2">
+                    ✨ اختبار المفاجأة الرومانسية ✨
+                </span>
+                <h1 class="text-2xl md:text-3xl font-black text-pink-700 glow-title">
+                    أجيبي عن الأسئلة لفتْح المفاجأة! 🎁💖
+                </h1>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between text-xs md:text-sm font-bold text-gray-600 mb-2 px-1">
+                    <span>التقدّم</span>
+                    <span>سؤال <span id="current-question-num" class="text-pink-600">1</span> من <span id="total-questions-num">5</span></span>
+                </div>
+                <div class="w-full bg-pink-100 rounded-full h-3.5 p-0.5 shadow-inner overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 h-full rounded-full transition-all duration-500 w-1/5"></div>
+                </div>
+            </div>
+
+            <!-- Question Box -->
+            <div id="question-box" class="transition-all duration-300">
+                <div class="bg-gradient-to-r from-pink-50 to-purple-50 p-4 md:p-5 rounded-2xl border border-pink-200 mb-6 shadow-sm">
+                    <p id="question-text" class="text-lg md:text-xl font-bold text-gray-800 leading-relaxed">
+                        جاري تحميل السؤال...
+                    </p>
+                </div>
+
+                <!-- Options List -->
+                <div id="options-container" class="space-y-3 mb-4">
+                    <!-- Dynamic Options Inserted via JS -->
+                </div>
+            </div>
+
+            <!-- Toast / Feedback Message -->
+            <div id="feedback-msg" class="hidden text-sm md:text-base font-bold p-3 rounded-2xl transition-all duration-300"></div>
+
+        </div>
+    </div>
+
+    <!-- 3D SURPRISE CONTAINER (Hidden Initially) -->
+    <div id="surprise-container" class="fixed inset-0 z-30 hidden opacity-0 transition-opacity duration-1000 flex flex-col items-center justify-between p-3 md:p-6 bg-gradient-to-b from-pink-950/70 via-purple-950/70 to-black/85 backdrop-blur-md">
+        
+        <!-- Victory Title Header -->
+        <div class="z-40 mt-2 glass-panel rounded-3xl p-4 md:p-6 text-center max-w-lg w-full transform transition-all duration-700 translate-y-[-20px]" id="victory-card">
+            <div class="inline-block p-2 bg-pink-100 rounded-full mb-1">
+                <span class="text-3xl">👰🎉✨</span>
+            </div>
+            <h2 class="text-2xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-600 to-purple-600 mb-1">
+                ألف مبروك لأحلى عروسة! 👑
+            </h2>
+            <p class="text-gray-700 font-bold text-xs md:text-sm">
+                لقد أتممتِ جميع الأسئلة بنجاح! استمتعي بمفاجأتك الثلاثية الأبعاد 💖
+            </p>
+        </div>
+
+        <!-- Three.js Canvas Container -->
+        <div id="canvas-wrapper" class="w-full flex-grow relative my-2 rounded-3xl overflow-hidden shadow-2xl border-2 border-white/40 max-w-4xl">
+            <div id="webgl-container"></div>
+            <!-- Interactive Touch Hint -->
+            <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-black/60 text-white text-xs md:text-sm px-4 py-2 rounded-full pointer-events-none backdrop-blur-md z-20 border border-white/20">
+                <i class="fa-solid fa-hand-pointer ml-1 animate-bounce text-pink-400"></i> اسحبي للتدوير | قرّبي وابعِدي للزوم
+            </div>
+        </div>
+
+        <!-- Action Control Buttons -->
+        <div class="z-40 mb-2 flex gap-3 flex-wrap justify-center">
+            <button id="music-btn" class="glass-btn text-white font-bold px-6 py-2.5 rounded-full text-sm md:text-base flex items-center gap-2">
+                <i class="fa-solid fa-music"></i> نغمة الاحتفال
+            </button>
+            <button id="restart-btn" class="glass-btn text-white font-bold px-6 py-2.5 rounded-full text-sm md:text-base flex items-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i> إعادة الاختبار
+            </button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="w-full max-w-xl z-20 text-center py-2 text-xs md:text-sm font-semibold text-pink-900/80">
+        صُنِعت بكل حب ✨ اختبار ومفاجأة العروسة ثلاثية الأبعاد 3D
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- QUIZ QUESTIONS DATASET ---
+        const quizData = [
+            {
+                question: "ما هي الأغنية التي تعبر عن أجمل فرحة بليلة العمر؟ 🎵",
+                options: [
+                    "طالع يعلى ويا العروسة ✨",
+                    "طلّت بالأبيض أحلى عروسة 👑",
+                    "الفرحة فرحتنا والبهجة جمعتنا 🎉",
+                    "ساعة الفرح الجميل 💖"
+                ],
+                answer: 1
+            },
+            {
+                question: "ما هو العنصر الأكثر بريقاً الذي يُكمّل إطلالة العروسة الملكية؟ 💍",
+                options: [
+                    "التاج المرصّع بالماس 👑",
+                    "باقة الورود الزاهية 💐",
+                    "حذاء الزفاف الأنيق 👠",
+                    "الطرحة الملكية الطويلة ✨"
+                ],
+                answer: 0
+            },
+            {
+                question: "أي لون زهور يرمز للحُب النقِي والبدايات الجديدة السعيدة؟ 🌹",
+                options: [
+                    "الورد الأسود",
+                    "الورد الأبيض والوردي 🌸",
+                    "الورد الأزرق",
+                    "الورد الأصفر"
+                ],
+                answer: 1
+            },
+            {
+                question: "ما هي الأجواء المثالية لليلة الزفاف الحالمة؟ ✨",
+                options: [
+                    "إضاءات دافئة وموسيقى هادئة وضحكات المحبين 💖",
+                    "ضجيج وزحام بدون نظام",
+                    "هدوء تام ودون أي احتفال",
+                    "أضواء خافتة جداً وبدون موسيقى"
+                ],
+                answer: 0
+            },
+            {
+                question: "جاهزة لرؤية المفاجأة الكبرى المصممة خصيصاً لكِ؟ 🎁👰",
+                options: [
+                    "نعم! تشوّقت لرؤيتها جداً! ✨🎉",
+                    "بالتأكيد، افتحي المفاجأة الآن! 💖",
+                    "نعم، أريد رؤية العروسة الـ 3D 👑"
+                ],
+                answer: 0 // All options are correct in spirit, handle 0 or any
+            }
+        ];
+
+        // --- GAME STATE VARIABLES ---
+        let currentQuestion = 0;
+        let isAnswering = false;
+
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const currentQuestionNumEl = document.getElementById('current-question-num');
+        const totalQuestionsNumEl = document.getElementById('total-questions-num');
+        const progressBarEl = document.getElementById('progress-bar');
+        const feedbackMsgEl = document.getElementById('feedback-msg');
+        const quizContainerEl = document.getElementById('quiz-container');
+        const surpriseContainerEl = document.getElementById('surprise-container');
+        const bgDecorationsEl = document.getElementById('bg-decorations');
+
+        // --- SYNTHESIZED SOUND EFFECTS (Web Audio API) ---
+        class SoundSystem {
+            constructor() {
+                this.ctx = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+
+            playCorrect() {
+                this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.25); // G5
+
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            }
+
+            playCelebrationMelody() {
+                this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+
+                const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.value = freq;
+                    
+                    const startTime = this.ctx.currentTime + idx * 0.12;
+                    gain.gain.setValueAtTime(0, startTime);
+                    gain.gain.linearRampToValueAtTime(0.2, startTime + 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.5);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(startTime);
+                    osc.stop(startTime + 0.5);
+                });
+            }
+        }
+
+        const soundFX = new SoundSystem();
+
+        // --- BACKGROUND FLOATING PARTICLES ---
+        function initBgDecorations() {
+            bgDecorationsEl.innerHTML = '';
+            const symbols = ['🌸', '✨', '💖', '⭐', '💍', '👑', '🌹'];
+            for (let i = 0; i < 22; i++) {
+                const el = document.createElement('div');
+                el.className = 'bg-particle text-pink-300 opacity-30 select-none';
+                el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                el.style.left = `${Math.random() * 100}%`;
+                el.style.top = `${80 + Math.random() * 20}%`;
+                el.style.fontSize = `${16 + Math.random() * 22}px`;
+                el.style.animationDuration = `${6 + Math.random() * 6}s`;
+                el.style.animationDelay = `${Math.random() * 5}s`;
+                bgDecorationsEl.appendChild(el);
+            }
+        }
+
+        // --- RENDER QUIZ QUESTION ---
+        function loadQuestion() {
+            isAnswering = false;
+            const data = quizData[currentQuestion];
+            totalQuestionsNumEl.innerText = quizData.length;
+            currentQuestionNumEl.innerText = currentQuestion + 1;
+
+            // Update Progress Bar
+            const progressPercent = ((currentQuestion + 1) / quizData.length) * 100;
+            progressBarEl.style.width = `${progressPercent}%`;
+
+            // Set Question Text
+            questionTextEl.innerText = data.question;
+
+            // Clear and Render Options
+            optionsContainerEl.innerHTML = '';
+            data.options.forEach((optionText, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-card w-full text-right p-4 rounded-2xl font-bold text-gray-700 text-sm md:text-base flex items-center justify-between shadow-sm cursor-pointer';
+                btn.innerHTML = `
+                    <span>${optionText}</span>
+                    <i class="fa-regular fa-circle text-pink-300 text-lg"></i>
+                `;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainerEl.appendChild(btn);
+            });
+
+            feedbackMsgEl.className = 'hidden';
+        }
+
+        // --- CHECK ANSWER HANDLER ---
+        function checkAnswer(selectedIndex, btnEl) {
+            if (isAnswering) return;
+            isAnswering = true;
+
+            const data = quizData[currentQuestion];
+            const isLastQuestion = currentQuestion === quizData.length - 1;
+            const isCorrect = (selectedIndex === data.answer) || isLastQuestion; // Last question accepts all as joyful choice
+
+            const iconEl = btnEl.querySelector('i');
+
+            if (isCorrect) {
+                btnEl.classList.add('correct');
+                iconEl.className = 'fa-solid fa-circle-check text-green-600 text-lg';
+                soundFX.playCorrect();
+
+                // Sparkle Effect
+                confetti({
+                    particleCount: 25,
+                    spread: 50,
+                    origin: { y: 0.7 }
+                });
+
+                showFeedback('إجابة رائعة وممتازة! ✨💖', 'bg-green-100 text-green-700 border border-green-300');
+
+                setTimeout(() => {
+                    if (currentQuestion < quizData.length - 1) {
+                        currentQuestion++;
+                        loadQuestion();
+                    } else {
+                        triggerSurpriseVictory();
+                    }
+                }, 1300);
+
+            } else {
+                btnEl.classList.add('wrong');
+                iconEl.className = 'fa-solid fa-circle-xmark text-rose-600 text-lg';
+                
+                showFeedback('حاولي مرة أخرى بكل حُب! 💕', 'bg-rose-100 text-rose-700 border border-rose-300');
+
+                setTimeout(() => {
+                    btnEl.classList.remove('wrong');
+                    iconEl.className = 'fa-regular fa-circle text-pink-300 text-lg';
+                    feedbackMsgEl.className = 'hidden';
+                    isAnswering = false;
+                }, 1200);
+            }
+        }
+
+        function showFeedback(text, className) {
+            feedbackMsgEl.innerText = text;
+            feedbackMsgEl.className = `mt-4 text-center font-bold p-3 rounded-2xl ${className}`;
+        }
+
+        // --- VICTORY & SURPRISE SHOWCASE ---
+        function triggerSurpriseVictory() {
+            soundFX.playCelebrationMelody();
+
+            // Fireworks Confetti Explosions
+            const count = 200;
+            const defaults = { origin: { y: 0.6 } };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+
+            // Hide Quiz & Fade In 3D Bride Surprise
+            quizContainerEl.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                quizContainerEl.classList.add('hidden');
+                surpriseContainerEl.classList.remove('hidden');
+                setTimeout(() => {
+                    surpriseContainerEl.classList.add('opacity-100');
+                    document.getElementById('victory-card').classList.remove('translate-y-[-20px]');
+                    initThreeJSBride();
+                }, 50);
+            }, 500);
+        }
+
+        // Action Buttons Setup
+        document.getElementById('music-btn').addEventListener('click', () => {
+            soundFX.playCelebrationMelody();
+            confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+        });
+
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            currentQuestion = 0;
+            surpriseContainerEl.classList.remove('opacity-100');
+            setTimeout(() => {
+                surpriseContainerEl.classList.add('hidden');
+                quizContainerEl.classList.remove('hidden', 'opacity-0', 'scale-95');
+                loadQuestion();
+            }, 500);
+        });
+
+
+        // ===================================================
+        // THREE.JS PROCEDURAL 3D BRIDE MODEL CREATION
+        // ===================================================
+        let scene, camera, renderer, controls, brideGroup;
+
+        function initThreeJSBride() {
+            const container = document.getElementById('webgl-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            container.innerHTML = '';
+
+            // Scene Setup
+            scene = new THREE.Scene();
+
+            // Camera Setup
+            camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+            camera.position.set(0, 3.8, 9.5);
+
+            // WebGL Renderer Setup
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            // OrbitControls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 + 0.05;
+            controls.minDistance = 4;
+            controls.maxDistance = 14;
+            controls.target.set(0, 2.6, 0);
+
+            // Lighting Setup
+            setupLighting();
+
+            // Pedestal Platform
+            createPedestal();
+
+            // Build Procedural 3D Bride
+            brideGroup = buildBrideModel();
+            scene.add(brideGroup);
+
+            // Floating Ambient Sparkles
+            createSparkles();
+
+            // Window Resize Listener
+            window.addEventListener('resize', onWindowResize);
+
+            // Animation Loop
+            animate();
+        }
+
+        // Lighting Configuration
+        function setupLighting() {
+            const ambient = new THREE.AmbientLight(0xfff0f5, 1.0);
+            scene.add(ambient);
+
+            // Directional Main Light
+            const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            mainLight.position.set(6, 12, 8);
+            mainLight.castShadow = true;
+            mainLight.shadow.mapSize.width = 1024;
+            mainLight.shadow.mapSize.height = 1024;
+            scene.add(mainLight);
+
+            // Soft Pink Point Light
+            const pinkPoint = new THREE.PointLight(0xffb6c1, 1.3, 15);
+            pinkPoint.position.set(-6, 4, -2);
+            scene.add(pinkPoint);
+
+            // Golden Top Rim Light
+            const rimLight = new THREE.SpotLight(0xffd700, 1.8);
+            rimLight.position.set(0, 10, -5);
+            rimLight.lookAt(0, 2.5, 0);
+            scene.add(rimLight);
+        }
+
+        // Pedestal Base
+        function createPedestal() {
+            const group = new THREE.Group();
+
+            const baseGeo = new THREE.CylinderGeometry(3.2, 3.6, 0.4, 32);
+            const baseMat = new THREE.MeshStandardMaterial({ color: 0xfff0f5, roughness: 0.3, metalness: 0.1 });
+            const base = new THREE.Mesh(baseGeo, baseMat);
+            base.position.y = -0.2;
+            base.receiveShadow = true;
+            group.add(base);
+
+            const topGeo = new THREE.CylinderGeometry(2.6, 2.9, 0.3, 32);
+            const topMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2, metalness: 0.2 });
+            const top = new THREE.Mesh(topGeo, topMat);
+            top.position.y = 0.15;
+            top.receiveShadow = true;
+            group.add(top);
+
+            const ringGeo = new THREE.TorusGeometry(2.75, 0.05, 16, 64);
+            const ringMat = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.85, roughness: 0.2 });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = Math.PI / 2;
+            ring.position.y = 0.15;
+            group.add(ring);
+
+            scene.add(group);
+        }
+
+        // Detailed Procedural Bride Model Construction
+        function buildBrideModel() {
+            const bride = new THREE.Group();
+
+            // Materials
+            const dressWhite = new THREE.MeshStandardMaterial({ color: 0xfcfcfc, roughness: 0.35, metalness: 0.05 });
+            const dressLace = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2, metalness: 0.1 });
+            const skin = new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.55 });
+            const hair = new THREE.MeshStandardMaterial({ color: 0x4a2e16, roughness: 0.7 });
+            const gold = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.9, roughness: 0.15 });
+
+            const veilMat = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.6,
+                roughness: 0.1,
+                transmission: 0.7,
+                thickness: 0.5
+            });
+
+            // 1. DRESS - BALLGOWN
+            const dressBaseGeo = new THREE.ConeGeometry(1.85, 2.8, 32);
+            const dressBase = new THREE.Mesh(dressBaseGeo, dressWhite);
+            dressBase.position.y = 1.4;
+            dressBase.castShadow = true;
+            bride.add(dressBase);
+
+            // Dress Outer Lace Tiers
+            const laceTier1Geo = new THREE.ConeGeometry(1.95, 1.8, 32, 1, true);
+            const laceTier1 = new THREE.Mesh(laceTier1Geo, dressLace);
+            laceTier1.position.y = 1.0;
+            bride.add(laceTier1);
+
+            const laceTier2Geo = new THREE.ConeGeometry(1.45, 1.2, 32, 1, true);
+            const laceTier2 = new THREE.Mesh(laceTier2Geo, dressLace);
+            laceTier2.position.y = 1.8;
+            bride.add(laceTier2);
+
+            // Belt & Diamond Waist Accent
+            const beltGeo = new THREE.CylinderGeometry(0.53, 0.56, 0.12, 32);
+            const belt = new THREE.Mesh(beltGeo, gold);
+            belt.position.y = 2.75;
+            bride.add(belt);
+
+            const gemGeo = new THREE.OctahedronGeometry(0.12);
+            const gemMat = new THREE.MeshStandardMaterial({ color: 0xff69b4, metalness: 0.9, roughness: 0.1 });
+            const gem = new THREE.Mesh(gemGeo, gemMat);
+            gem.position.set(0, 2.75, 0.57);
+            bride.add(gem);
+
+            // 2. BODICE & NECK
+            const bodiceGeo = new THREE.CylinderGeometry(0.48, 0.53, 0.9, 32);
+            const bodice = new THREE.Mesh(bodiceGeo, dressWhite);
+            bodice.position.y = 3.2;
+            bodice.castShadow = true;
+            bride.add(bodice);
+
+            const neckGeo = new THREE.CylinderGeometry(0.16, 0.18, 0.3, 16);
+            const neck = new THREE.Mesh(neckGeo, skin);
+            neck.position.y = 3.75;
+            bride.add(neck);
+
+            // 3. HEAD & FACIAL DETAILS
+            const headGeo = new THREE.SphereGeometry(0.38, 32, 32);
+            const head = new THREE.Mesh(headGeo, skin);
+            head.position.y = 4.1;
+            head.castShadow = true;
+            bride.add(head);
+
+            // Eyes
+            const eyeGeo = new THREE.SphereGeometry(0.04, 16, 16);
+            const eyeMat = new THREE.MeshBasicMaterial({ color: 0x222222 });
+            const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+            leftEye.position.set(-0.12, 4.15, 0.33);
+            bride.add(leftEye);
+
+            const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+            rightEye.position.set(0.12, 4.15, 0.33);
+            bride.add(rightEye);
+
+            // Cheeks Rosy Blush
+            const cheekGeo = new THREE.CircleGeometry(0.06, 16);
+            const cheekMat = new THREE.MeshBasicMaterial({ color: 0xff8080, side: THREE.DoubleSide });
+            const leftCheek = new THREE.Mesh(cheekGeo, cheekMat);
+            leftCheek.position.set(-0.18, 4.05, 0.34);
+            bride.add(leftCheek);
+
+            const rightCheek = new THREE.Mesh(cheekGeo, cheekMat);
+            rightCheek.position.set(0.18, 4.05, 0.34);
+            bride.add(rightCheek);
+
+            // 4. HAIR & TIARA / CROWN
+            const hairBunGeo = new THREE.SphereGeometry(0.32, 24, 24);
+            const hairBun = new THREE.Mesh(hairBunGeo, hair);
+            hairBun.position.set(0, 4.35, -0.15);
+            bride.add(hairBun);
+
+            const hairFrontGeo = new THREE.SphereGeometry(0.40, 24, 24, 0, Math.PI * 2, 0, Math.PI / 2.2);
+            const hairFront = new THREE.Mesh(hairFrontGeo, hair);
+            hairFront.position.set(0, 4.12, 0.02);
+            hairFront.rotation.x = -0.2;
+            bride.add(hairFront);
+
+            // Golden Tiara
+            const tiaraRingGeo = new THREE.TorusGeometry(0.3, 0.03, 16, 32, Math.PI);
+            const tiara = new THREE.Mesh(tiaraRingGeo, gold);
+            tiara.position.set(0, 4.4, 0.1);
+            tiara.rotation.x = -Math.PI / 3;
+            bride.add(tiara);
+
+            for (let i = -2; i <= 2; i++) {
+                const jewelGeo = new THREE.ConeGeometry(0.04, 0.12, 8);
+                const jewel = new THREE.Mesh(jewelGeo, gold);
+                jewel.position.set(i * 0.08, 4.48 + (2 - Math.abs(i)) * 0.03, 0.22);
+                bride.add(jewel);
+            }
+
+            // 5. ELEGANT VEIL
+            const veilGeo = new THREE.CylinderGeometry(0.35, 1.45, 2.6, 32, 1, true, 0, Math.PI * 1.2);
+            const veil = new THREE.Mesh(veilGeo, veilMat);
+            veil.position.set(0, 3.2, -0.3);
+            veil.rotation.y = Math.PI * 0.9;
+            bride.add(veil);
+
+            // 6. ARMS & BOUQUET OF FLOWERS
+            const armGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.9, 16);
+            
+            const leftArm = new THREE.Mesh(armGeo, skin);
+            leftArm.position.set(-0.55, 3.1, 0.2);
+            leftArm.rotation.z = Math.PI / 6;
+            leftArm.rotation.x = -Math.PI / 6;
+            bride.add(leftArm);
+
+            const rightArm = new THREE.Mesh(armGeo, skin);
+            rightArm.position.set(0.55, 3.1, 0.2);
+            rightArm.rotation.z = -Math.PI / 6;
+            rightArm.rotation.x = -Math.PI / 6;
+            bride.add(rightArm);
+
+            // Flower Bouquet Cluster
+            const bouquetGroup = new THREE.Group();
+            bouquetGroup.position.set(0, 2.9, 0.55);
+
+            const flowerColors = [0xff1493, 0xff69b4, 0xffb6c1, 0xffffff, 0xffd700];
+            for (let i = 0; i < 16; i++) {
+                const flowerGeo = new THREE.DodecahedronGeometry(0.08 + Math.random() * 0.04);
+                const flowerMat = new THREE.MeshStandardMaterial({ 
+                    color: flowerColors[Math.floor(Math.random() * flowerColors.length)],
+                    roughness: 0.5 
+                });
+                const flower = new THREE.Mesh(flowerGeo, flowerMat);
+                flower.position.set(
+                    (Math.random() - 0.5) * 0.35,
+                    (Math.random() - 0.5) * 0.25,
+                    (Math.random() - 0.5) * 0.35
+                );
+                bouquetGroup.add(flower);
+            }
+
+            const leafGeo = new THREE.ConeGeometry(0.2, 0.3, 16);
+            const leafMat = new THREE.MeshStandardMaterial({ color: 0x2e8b57 });
+            const leaf = new THREE.Mesh(leafGeo, leafMat);
+            leaf.position.y = -0.15;
+            leaf.rotation.x = Math.PI;
+            bouquetGroup.add(leaf);
+
+            bride.add(bouquetGroup);
+
+            return bride;
+        }
+
+        // Floating Particle Sparkles in 3D Scene
+        let particlesMesh;
+        function createSparkles() {
+            const particleCount = 80;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 10;
+                positions[i + 1] = Math.random() * 6;
+                positions[i + 2] = (Math.random() - 0.5) * 10;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 16;
+            canvas.height = 16;
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.4, 'rgba(255,182,193,0.8)');
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 16, 16);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.PointsMaterial({
+                size: 0.28,
+                map: texture,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            particlesMesh = new THREE.Points(geometry, material);
+            scene.add(particlesMesh);
+        }
+
+        // Window Resize Event Handler
+        function onWindowResize() {
+            if (!camera || !renderer) return;
+            const container = document.getElementById('webgl-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        }
+
+        // Render & Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Auto-Rotate Bride
+            if (brideGroup) {
+                brideGroup.rotation.y += 0.007;
+            }
+
+            // Animate Floating Sparkles Upward
+            if (particlesMesh) {
+                const positions = particlesMesh.geometry.attributes.position.array;
+                for (let i = 1; i < positions.length; i += 3) {
+                    positions[i] += 0.007;
+                    if (positions[i] > 6) positions[i] = 0;
+                }
+                particlesMesh.geometry.attributes.position.needsUpdate = true;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // --- GAME STARTUP ---
+        window.onload = () => {
+            initBgDecorations();
+            loadQuestion();
+        };
+    </script>
+</body>
+</html>
